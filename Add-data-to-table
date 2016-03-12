@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+import boto3
+import logging
+
+script = 'add-to-table.py'
+version = 'V1'
+
+class ContextFilter(logging.Filter):
+  def filter(self,record):
+    record.CMDID=script
+    return True
+
+class Mod3:
+    Resources = ""
+    Environment = ""
+    subnetname = ""
+    CIDR = ""
+    Availzone = ""
+    VPCname = ""
+
+def Resourcedetails(Resources,Environment,subnetname,CIDR,Availzone,VPCname):
+    mod3 = Mod3();
+    mod3.Resources = Resources;
+    mod3.Environment = Environment;
+    mod3.subnetname = subnetname;
+    mod3.CIDR = CIDR;
+    mod3.Availzone = Availzone;
+    mod3.VPCname = VPCname;
+    return mod3
+
+def adddatatotable(mod3):
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('Module3jeena')
+    table.put_item(
+       Item={
+            'Resources': mod3.Resources,
+            'Environment': mod3.Environment,
+            'subnetname': mod3.subnetname,
+            'CIDR': mod3.CIDR,
+            'Availzone' : mod3.Availzone,
+            'VPCname': mod3.VPCname
+           
+       }
+    )
+
+dataOne = Resourcedetails("DB-Tier1","Development","DevDBsubnet1",'16.0.0.0/28',"us-east-1a","na");
+datatwo = Resourcedetails("DB-Tier2","Development","DevDBsubnet2",'16.0.0.16/28',"us-east-1c","na");
+
+
+
+adddatatotable(dataOne)
+adddatatotable(datatwo)
+
+
+
+
