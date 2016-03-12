@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+import boto3
+import logging
+
+script = 'create-table.py'
+version = 'V1'
+
+class ContextFilter(logging.Filter):
+  def filter(self,record):
+    record.CMDID=script
+    return True
+
+
+dynamodb = boto3.resource('dynamodb')
+
+# Create the DynamoDB table.
+table = dynamodb.create_table(
+    TableName='Module3jeena',
+    KeySchema=[
+        {
+            'AttributeName': 'Resources',
+            'KeyType': 'HASH'
+        },
+        {
+            'AttributeName': 'Environment',
+            'KeyType': 'RANGE'
+        }
+    ],
+    AttributeDefinitions=[
+        {
+            'AttributeName': 'Resources',
+            'AttributeType': 'S'
+        },
+        {
+            'AttributeName': 'Environment',
+            'AttributeType': 'S'
+        },
+
+    ],
+    ProvisionedThroughput={
+        'ReadCapacityUnits': 10,
+        'WriteCapacityUnits': 10
+    }
+)
+
+# Wait until the table exists.
+table.meta.client.get_waiter('table_exists').wait(TableName='Module3jeena')
+
